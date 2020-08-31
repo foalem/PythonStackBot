@@ -1,0 +1,58 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "Image",
+            "width": "0px",
+            "url": "https://www.jobboardfinder.com/upload/1c7f578db0e8d9673c95dd5b1c7122c5a36081b0/logo_jobboard.png"
+        },
+        {
+            "type": "TextBlock",
+            "size": "Large",
+            "weight": "Bolder",
+            "text": "Welcome to Python StackOverflow Bot!!!",
+            "horizontalAlignment": "Center"
+        },
+        {
+            "type": "Container",
+            "style": "good",
+            "bleed": true,
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "Ask any python programming question and I will help you find the best answer.",
+                    "wrap": true,
+                    "fontType": "Default"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "e.g : how to use while loop function in Python?",
+                    "wrap": true
+                }
+            ]
+        },
+        {
+            "type": "TextBlock",
+            "text": "Get an overview on how to develop BOT with Microsoft BOT framework. ",
+            "wrap": true,
+            "size": "Small"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.OpenUrl",
+            "title": "Read Microsoft BOT Framework Documentation",
+            "url": "https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0",
+            "style": "positive"
+        },
+        {
+            "type": "Action.OpenUrl",
+            "title": "Read Microsoft QnA Maker Documentation",
+            "style": "positive",
+            "url": "https://docs.microsoft.com/en-us/azure/cognitive-services/qnamaker/overview/overview"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.2",
+    "minHeight": "0px"
+}

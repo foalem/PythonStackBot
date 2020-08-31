@@ -1,0 +1,18 @@
+{
+    "name": "PythonStackBot",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "http://localhost:3978/api/messages",
+            "id": "56f54da0-eaad-11ea-ac49-ebbce9d053f9",
+            "name": "http://localhost:3978/api/messages"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "overrides": null,
+    "path": "C:\\Users\\Patrick\\source\\repos\\PythonStackBot\\PythonStackBot.bot"
+}
