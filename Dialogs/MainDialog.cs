@@ -24,18 +24,21 @@ namespace PythonStackBot.Dialogs
     {
         protected readonly ILogger Logger;
         protected readonly IConfiguration Configuration;
+        protected readonly IBotServices Service;
         //private const string InfoMessage = "Here's what I can do to help ... 😊 ";
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ILogger<MainDialog> logger, IConfiguration configuration)
+        public MainDialog(ILogger<MainDialog> logger, IConfiguration configuration, IBotServices service)
             : base(nameof(MainDialog))
         {
             Logger = logger;
             Configuration = configuration;
+            Service = service;
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new AddDialog(configuration));
+            AddDialog(new QnADialog(configuration,service));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -96,8 +99,9 @@ namespace PythonStackBot.Dialogs
             }
             else if (operation.Equals("Asking Programming Question about Python"))
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("What's your programming question ?"), cancellationToken);
-                
+                //await stepContext.Context.SendActivityAsync(MessageFactory.Text("What's your programming question ?"), cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(QnADialog), new User(), cancellationToken);
+
             }
             else
             {

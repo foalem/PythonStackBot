@@ -41,7 +41,7 @@ namespace PythonStackBot.Dialogs.Operations
         {
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
             {
-                Prompt = MessageFactory.Text("Please enter the python programming question.")
+                Prompt = MessageFactory.Text("What's your programming question ?")
             }, cancellationToken);
         }
         private async Task<DialogTurnResult> QuestionPhraseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -106,7 +106,7 @@ namespace PythonStackBot.Dialogs.Operations
                 await stepContext.Context.SendActivitiesAsync(
                     new Activity[] {
                 new Activity { Type = ActivityTypes.Typing },
-                new Activity { Type = "delay", Value= 3000 },
+                new Activity { Type = "delay", Value= 5000 },
                     },
                     cancellationToken);
 

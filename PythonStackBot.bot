@@ -9,10 +9,19 @@
             "endpoint": "http://localhost:3978/api/messages",
             "id": "56f54da0-eaad-11ea-ac49-ebbce9d053f9",
             "name": "http://localhost:3978/api/messages"
+        },
+        {
+            "type": "qna",
+            "endpointKey": "4fa6a3a5-a87c-47e1-88a4-3054e5013ed5",
+            "hostname": "https://myqna.azurewebsites.net/qnamaker",
+            "kbId": "1ceaa2b1-06f1-45fb-8839-7d848ab4c603",
+            "name": "QnA Maker",
+            "subscriptionKey": "2116d6b358c64d9badddcb4022da0d43",
+            "id": "141"
         }
     ],
     "padlock": "",
     "version": "2.0",
-    "overrides": null,
-    "path": "C:\\Users\\Patrick\\source\\repos\\PythonStackBot\\PythonStackBot.bot"
+    "path": "C:\\Users\\Patrick\\source\\repos\\PythonStackBot\\PythonStackBot.bot",
+    "overrides": null
 }
