@@ -10,6 +10,31 @@ namespace PythonStackBot.Utilities
     public static class QnAClient
     {
 
+        //public static async Task UpdateQ(IQnAMakerClient client, string kbId, int ID)
+        //{
+
+        //    var updateOp = await client.Knowledgebase.UpdateAsync(kbId, new UpdateKbOperationDTO
+        //    {
+        //        // Create JSON of changes
+        //        Add = new UpdateKbOperationDTOAdd
+        //        {
+        //            QnaList = new List<QnADTO> {
+        //                new QnADTO {
+        //                    Questions = QnAData.QuestionPhrase,
+        //                    //Answer = answer,
+        //                }
+        //            },
+        //        },
+        //        Update = new UpdateKbOperationDTOUpdate { 
+        //            QnaList = new List<UpdateQnaDTOQuestions> {},
+        //        },
+        //        Delete = null
+        //    }); ;
+
+        //    // Loop while operation is success
+        //    updateOp = await MonitorOperation(client, updateOp);
+        //}
+
         // <UpdateKBMethod>
         public static async Task UpdateKB(IQnAMakerClient client, string kbId, string answer)
         {
