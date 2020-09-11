@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards;
+using Luis;
+//using Luis;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -25,20 +27,23 @@ namespace PythonStackBot.Dialogs
         protected readonly ILogger Logger;
         protected readonly IConfiguration Configuration;
         protected readonly IBotServices Service;
+        private readonly LuisRecongnizer _luisRecognizer;
         //private const string InfoMessage = "Here's what I can do to help ... 😊 ";
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ILogger<MainDialog> logger, IConfiguration configuration, IBotServices service)
+        public MainDialog(ILogger<MainDialog> logger, IConfiguration configuration, IBotServices service, LuisRecongnizer luisRecognizer)
             : base(nameof(MainDialog))
         {
             Logger = logger;
             Configuration = configuration;
             Service = service;
+            _luisRecognizer = luisRecognizer;
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new AddDialog(configuration));
             AddDialog(new QnADialog(configuration,service));
+            AddDialog(new SmartDialog(configuration, service));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -55,7 +60,7 @@ namespace PythonStackBot.Dialogs
             await stepContext.Context.SendActivityAsync(
                 MessageFactory.Text("Here's what I can do to help ... 😊"), cancellationToken);
 
-            List<string> operationList = new List<string> { "Giving your Python Contribution", "Asking Programming Question about Python", "Asking Question about me" };
+            List<string> operationList = new List<string> { "Giving your Python Contribution", "Ask a Question" };
             // Create card
             var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
             {
@@ -84,6 +89,14 @@ namespace PythonStackBot.Dialogs
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            if (!_luisRecognizer.IsConfigured)
+            {
+                await stepContext.Context.SendActivityAsync(
+                    MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.", inputHint: InputHints.IgnoringInput), cancellationToken);
+
+                return await stepContext.NextAsync(null, cancellationToken);
+            }
+            var luisResult = await _luisRecognizer.RecognizeAsync<LuisCognitiveHelper>(stepContext.Context, cancellationToken);
             stepContext.Values["Operation"] = ((FoundChoice)stepContext.Result).Value;
             string operation = (string)stepContext.Values["Operation"];
 
@@ -92,17 +105,43 @@ namespace PythonStackBot.Dialogs
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Please provide following details to add a new python question answer pair."), cancellationToken);
                 return await stepContext.BeginDialogAsync(nameof(AddDialog), new User(), cancellationToken);
             }
-            else if (operation.Equals("Asking Question about me"))
+            else if (operation.Equals("Ask a Question"))
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Please provide following details to update the existing question answer pair."), cancellationToken);
-                
-            }
-            else if (operation.Equals("Asking Programming Question about Python"))
-            {
-                //await stepContext.Context.SendActivityAsync(MessageFactory.Text("What's your programming question ?"), cancellationToken);
-                return await stepContext.BeginDialogAsync(nameof(QnADialog), new User(), cancellationToken);
+                switch (luisResult.TopIntent().intent)
+                {
+                    case LuisCognitiveHelper.Intent.Search:
+                        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+                        return await stepContext.BeginDialogAsync(nameof(QnADialog), new User(), cancellationToken);
+                    case LuisCognitiveHelper.Intent.SmallTalk:
+                        //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+                        return await stepContext.BeginDialogAsync(nameof(SmartDialog), new User(), cancellationToken);
+                    case LuisCognitiveHelper.Intent.Brain:
+                        //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+                        return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+                        {
+                            Prompt = MessageFactory.Text("I'm using Microsoft AI.😊")
+                        }, cancellationToken);
+                    case LuisCognitiveHelper.Intent.None:
+                        //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+                        return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+                        {
+                            Prompt = MessageFactory.Text("I don't understang your question. Please rephrase it.")
+                        }, cancellationToken);
+                    default:
+                        //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...humm default😊"), cancellationToken);
+                        return await stepContext.EndDialogAsync(null, cancellationToken);
+
+
+                }
+               
 
             }
+            //else if (operation.Equals("Asking Programming Question about Python"))
+            //{
+            //    //await stepContext.Context.SendActivityAsync(MessageFactory.Text("What's your programming question ?"), cancellationToken);
+            //    return await stepContext.BeginDialogAsync(nameof(QnADialog), new User(), cancellationToken);
+
+            //}
             else
             {
 

@@ -29,6 +29,8 @@ namespace PythonStackBot
 
             // Create the bot services(QnA) as a singleton.
             services.AddSingleton<IBotServices, BotServices>();
+            // Register LUIS recognizer
+            services.AddSingleton<LuisRecongnizer>();
 
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
@@ -37,6 +39,8 @@ namespace PythonStackBot
 
             // Create the User state. (Used in this bot's Dialog implementation.)
             services.AddSingleton<UserState>();
+            // Register LUIS recognizer
+            //services.AddSingleton<LuisRecognizer>();
 
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();

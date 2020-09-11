@@ -14,10 +14,20 @@
             "type": "qna",
             "endpointKey": "4fa6a3a5-a87c-47e1-88a4-3054e5013ed5",
             "hostname": "https://myqna.azurewebsites.net/qnamaker",
+            "id": "141",
             "kbId": "1ceaa2b1-06f1-45fb-8839-7d848ab4c603",
             "name": "QnA Maker",
-            "subscriptionKey": "2116d6b358c64d9badddcb4022da0d43",
-            "id": "141"
+            "subscriptionKey": "2116d6b358c64d9badddcb4022da0d43"
+        },
+        {
+            "type": "luis",
+            "appId": "12cf74a0-3668-4a1c-8e6a-7164b85e85d0",
+            "authoringKey": "d03aa41c5f194f8382dc5e8c5ffd1bbb",
+            "name": "LUIS",
+            "region": "West US",
+            "subscriptionKey": "135727a1-e76c-4491-b021-913f1e981318",
+            "version": " 0.1",
+            "id": "224"
         }
     ],
     "padlock": "",
