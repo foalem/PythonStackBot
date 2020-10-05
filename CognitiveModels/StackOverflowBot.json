@@ -5372,11 +5372,6 @@
       ]
     },
     {
-      "text": "anything funny?",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
       "text": "api in python",
       "intent": "Search",
       "entities": [
@@ -5416,11 +5411,6 @@
     {
       "text": "are you a chatbot",
       "intent": "SmallTalk",
-      "entities": []
-    },
-    {
-      "text": "are you a developer",
-      "intent": "Languages",
       "entities": []
     },
     {
@@ -5663,16 +5653,6 @@
       "entities": []
     },
     {
-      "text": "can you make me laugh?",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
-      "text": "can you program?",
-      "intent": "Languages",
-      "entities": []
-    },
-    {
       "text": "can you speak any languages",
       "intent": "Languages",
       "entities": []
@@ -5725,11 +5705,6 @@
       "entities": []
     },
     {
-      "text": "do you have a good joke",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
       "text": "do you have a lot of things to do",
       "intent": "SmallTalk",
       "entities": []
@@ -5757,6 +5732,11 @@
     {
       "text": "do you work",
       "intent": "SmallTalk",
+      "entities": []
+    },
+    {
+      "text": "extend your knowledge base",
+      "intent": "Joke",
       "entities": []
     },
     {
@@ -5800,7 +5780,12 @@
       "entities": []
     },
     {
-      "text": "give me joke",
+      "text": "give my contribution",
+      "intent": "Joke",
+      "entities": []
+    },
+    {
+      "text": "giving a python contribution",
       "intent": "Joke",
       "entities": []
     },
@@ -5815,21 +5800,6 @@
           "children": []
         }
       ]
-    },
-    {
-      "text": "got any dev jokes",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
-      "text": "got any developer jokes",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
-      "text": "got any jokes",
-      "intent": "Joke",
-      "entities": []
     },
     {
       "text": "group by strftime date format",
@@ -6028,6 +5998,11 @@
       "entities": []
     },
     {
+      "text": "how have you do that?",
+      "intent": "Brain",
+      "entities": []
+    },
+    {
       "text": "how old are you",
       "intent": "SmallTalk",
       "entities": []
@@ -6223,11 +6198,6 @@
       "entities": []
     },
     {
-      "text": "i want a laugh",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
       "text": "i want to be your friend",
       "intent": "SmallTalk",
       "entities": []
@@ -6394,11 +6364,6 @@
       ]
     },
     {
-      "text": "joke",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
       "text": "language",
       "intent": "Languages",
       "entities": []
@@ -6433,11 +6398,6 @@
     {
       "text": "main menu",
       "intent": "Help",
-      "entities": []
-    },
-    {
-      "text": "make me laugh",
-      "intent": "Joke",
       "entities": []
     },
     {
@@ -6525,6 +6485,11 @@
           "children": []
         }
       ]
+    },
+    {
+      "text": "provide my question and answers",
+      "intent": "Joke",
+      "entities": []
     },
     {
       "text": "pycurl and unescape",
@@ -6757,6 +6722,11 @@
       ]
     },
     {
+      "text": "supply my contribution",
+      "intent": "Joke",
+      "entities": []
+    },
+    {
       "text": "talk about yourself",
       "intent": "SmallTalk",
       "entities": []
@@ -6779,26 +6749,6 @@
       ]
     },
     {
-      "text": "tell a jok",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
-      "text": "tell a joke",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
-      "text": "tell joke",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
-      "text": "tell me a joke",
-      "intent": "Joke",
-      "entities": []
-    },
-    {
       "text": "tell me about you",
       "intent": "SmallTalk",
       "entities": []
@@ -6816,11 +6766,6 @@
     {
       "text": "tell me some stuff about you",
       "intent": "SmallTalk",
-      "entities": []
-    },
-    {
-      "text": "tell me something funny",
-      "intent": "Joke",
       "entities": []
     },
     {

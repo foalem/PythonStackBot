@@ -8,6 +8,7 @@ using Microsoft.Azure.CognitiveServices.Knowledge.QnAMaker;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,7 @@ namespace PythonStackBot.Dialogs.Operations
 
         public const float DefaultThreshold = 0.5F;
         public const int DefaultTopN = 25;
-        public int i = 0;
+        //public int i = 0;
         public  string Question;
         public const string DefaultNoAnswer = "No QnAMaker answers found.";
         protected readonly IConfiguration Configuration;
@@ -30,10 +31,10 @@ namespace PythonStackBot.Dialogs.Operations
         {
             var waterfallSteps = new WaterfallStep[]
             {
-                QuestionsStepAsync,
+                //QuestionsStepAsync,
                 CallGenerateAnswerAsync,
-                QuestionConfirmStepAsync,
-                SummaryStepAsync,
+                //QuestionConfirmStepAsync,
+                //SummaryStepAsync,
                 //DisplayQnAResult,
             };
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterfallSteps));
@@ -48,15 +49,17 @@ namespace PythonStackBot.Dialogs.Operations
 
         }
 
-        private async Task<DialogTurnResult> QuestionsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
-            {
-                Prompt = MessageFactory.Text("Please enter your programming question.")
-            }, cancellationToken);
-        }
+        //private async Task<DialogTurnResult> QuestionsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        //{
+        //    return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+        //    {
+        //        Prompt = MessageFactory.Text("Please enter your programming question.")
+        //    }, cancellationToken);
+        //}
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            //stepContext.Values["Question1"] = (string)stepContext.Result;
+            //stepContext.Values["question"] = (string)stepContext.Result;
 
             var qnaMakerOptions = new QnAMakerOptions
             {
@@ -77,86 +80,131 @@ namespace PythonStackBot.Dialogs.Operations
             QnAQuestionID ID = new QnAQuestionID();
             if (response != null && response.Length > 0)
             {
+                int i = 0;
                 int id = response[0].Id;
                 ID.QuestionID = id;
-                 await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+                do
                 {
-                    Prompt = MessageFactory.Text(response[i].Answer),
-                }, cancellationToken);
-                i++;
-                return await stepContext.ContinueDialogAsync();
+                        await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text(response[i].Answer),
+                    }, cancellationToken);
+                    //i=i+1;
+                
+                        i++;
+                //var Msg = await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions
+                // {
+                //     Prompt = MessageFactory.Text("Did the answer helpful?")
+                // }, cancellationToken);
+                //await stepContext.PromptAsync(nameof(ChoicePrompt),
+                // new PromptOptions
+                // {
+                //     Prompt = MessageFactory.Text("Did you find my answer helpfull?"),
+                //     Choices = ChoiceFactory.ToChoices(new List<string> { "Helpfull👍", "Not helpfull👎" }),
+                // }, cancellationToken);
+                //stepContext.Values["question"] = ((FoundChoice)stepContext.Result).Value;
+                //if ((string)stepContext.Values["question"] == "Helpfull👍")
+                //{
+                //    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you for your feedback"), cancellationToken);
+                //    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Done.😇"));
+
+                 //   return await stepContext.EndDialogAsync(null, cancellationToken);
+                //}
+                //else
+                //{
+                //    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Request Not Confirmed."));
+                //    //await stepContext.ContinueDialogAsync(CallGenerateAnswerAsync);
+                //    //await stepContext.RepromptDialogAsync(stepContext, CallGenerateAnswerAsync);
+                //    // stepContext.ActiveDialog.State["stepIndex"] = (int)stepContext.ActiveDialog.State["stepIndex"] - 2;
+                //    //return await CallGenerateAnswerAsync(stepContext, cancellationToken);
+                //    return await stepContext.ReplaceDialogAsync(InitialDialogId, stepContext, cancellationToken);
+                //    //return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+                //}
+
+                } while (i < response.Length);
+                //await QuestionConfirmStepAsync(stepContext, cancellationToken);
+                //return await stepContext.ContinueDialogAsync();
+                return await stepContext.EndDialogAsync(null, cancellationToken);
                 //QuestionConfirmStepAsync(stepContext, cancellationToken);
                 //QuestionConfirmStepAsync(stepContext,cancellationToken);
             }
             else
             {
                 //return await stepContext.Context.SendActivityAsync(MessageFactory.Text("No QnA Maker answers were found."), cancellationToken);
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+                 await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
                 {
                     Prompt = MessageFactory.Text("I could not find an answer to your question. Please rephrase it, so that I can better understand it."),
                 }, cancellationToken);
 
-            }
-
-        }
-        private async Task<DialogTurnResult> QuestionConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            stepContext.Values["Question"] = (string)stepContext.Result;
-            QnAData.QuestionPhrase.Add((string)stepContext.Values["Question"]);
-            return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions
-            {
-                Prompt = MessageFactory.Text("Did the answer helpful?")
-            }, cancellationToken);
-        }
-
-        private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            if ((bool)stepContext.Result)
-            {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you for your feedback"), cancellationToken);
-
-               // for (int i = 0; i < QnAData.QuestionPhrase.Count; i++)
-               // {
-               //     await stepContext.Context.SendActivityAsync(MessageFactory.Text(QnAData.QuestionPhrase[i]), cancellationToken);
-               // }
-
-
-               //// await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your programming Answer - " + (string)stepContext.Values["Answer"]), cancellationToken);
-
-               // await stepContext.Context.SendActivityAsync(MessageFactory.Text("I am updating my Knowledge Base."), cancellationToken);
-
-               // await stepContext.Context.SendActivitiesAsync(
-               //     new Activity[] {
-               // new Activity { Type = ActivityTypes.Typing },
-               // new Activity { Type = "delay", Value= 5000 },
-               //     },
-               //     cancellationToken);
-
-               // var authoringURL = $"https://{Configuration["ResourceName"]}.cognitiveservices.azure.com";
-
-               // // <AuthorizationAuthor>
-               // var client = new QnAMakerClient(new ApiKeyServiceClientCredentials(Configuration["Key"]))
-               // { Endpoint = authoringURL };
-               // // </AuthorizationAuthor>
-
-               // QnAClient.UpdateKB(client, Configuration["KnowledgeBaseId"], (string)stepContext.Values["Answer"]).Wait();
-               // QnAClient.PublishKb(client, Configuration["KnowledgeBaseId"]).Wait();
-
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Done.😇"));
-
+                //return await stepContext.ContinueDialogAsync();
                 return await stepContext.EndDialogAsync(null, cancellationToken);
+
             }
-            else
-            {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Request Not Confirmed."));
-                //await stepContext.ContinueDialogAsync(CallGenerateAnswerAsync);
-                //await stepContext.RepromptDialogAsync(stepContext, CallGenerateAnswerAsync);
-                 stepContext.ActiveDialog.State["stepIndex"] = (int)stepContext.ActiveDialog.State["stepIndex"] - 2;
-                return await CallGenerateAnswerAsync(stepContext, cancellationToken);
-                //return await stepContext.ReplaceDialogAsync(InitialDialogId, stepContext.Values["Question"], cancellationToken);
-                //return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
-            }
+
         }
+        //private async Task<DialogTurnResult> QuestionConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        //{
+        //    stepContext.Values["Question"] = (string)stepContext.Result;
+        //    QnAData.QuestionPhrase.Add((string)stepContext.Values["Question"]);
+        //    //await stepContext.ContinueDialogAsync();
+        //    return await stepContext.PromptAsync(nameof(ChoicePrompt),
+        //        new PromptOptions
+        //        {
+        //            Prompt = MessageFactory.Text("Did you find my answer helpfull?"),
+        //            Choices = ChoiceFactory.ToChoices(new List<string> { "Helpfull👍", "Not helpfull👎" }),
+        //        }, cancellationToken);
+        //    //return await stepContext.ContinueDialogAsync();
+        //}
+
+        //private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        //{
+        //    stepContext.Values["question"] = ((FoundChoice)stepContext.Result).Value;
+        //    if ((string)stepContext.Values["question"] == "Not helpfull👎")
+        //    {
+        //        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you for your feedback"), cancellationToken);
+
+        //        // for (int i = 0; i < QnAData.QuestionPhrase.Count; i++)
+        //        // {
+        //        //     await stepContext.Context.SendActivityAsync(MessageFactory.Text(QnAData.QuestionPhrase[i]), cancellationToken);
+        //        // }
+
+
+        //        //// await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your programming Answer - " + (string)stepContext.Values["Answer"]), cancellationToken);
+
+        //        // await stepContext.Context.SendActivityAsync(MessageFactory.Text("I am updating my Knowledge Base."), cancellationToken);
+
+        //        // await stepContext.Context.SendActivitiesAsync(
+        //        //     new Activity[] {
+        //        // new Activity { Type = ActivityTypes.Typing },
+        //        // new Activity { Type = "delay", Value= 5000 },
+        //        //     },
+        //        //     cancellationToken);
+
+        //        // var authoringURL = $"https://{Configuration["ResourceName"]}.cognitiveservices.azure.com";
+
+        //        // // <AuthorizationAuthor>
+        //        // var client = new QnAMakerClient(new ApiKeyServiceClientCredentials(Configuration["Key"]))
+        //        // { Endpoint = authoringURL };
+        //        // // </AuthorizationAuthor>
+
+        //        // QnAClient.UpdateKB(client, Configuration["KnowledgeBaseId"], (string)stepContext.Values["Answer"]).Wait();
+        //        // QnAClient.PublishKb(client, Configuration["KnowledgeBaseId"]).Wait();
+
+        //        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Done.😇"));
+
+        //        return await stepContext.EndDialogAsync(null, cancellationToken);
+        //    }
+        //    else
+        //    {
+        //        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Request Not Confirmed."));
+        //        //await stepContext.ContinueDialogAsync(CallGenerateAnswerAsync);
+        //        //await stepContext.RepromptDialogAsync(stepContext, CallGenerateAnswerAsync);
+        //        // stepContext.ActiveDialog.State["stepIndex"] = (int)stepContext.ActiveDialog.State["stepIndex"] - 2;
+        //        //return await CallGenerateAnswerAsync(stepContext, cancellationToken);
+        //        return await stepContext.ReplaceDialogAsync(InitialDialogId, stepContext, cancellationToken);
+        //        //return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+        //    }
+        //}
 
     }
 }

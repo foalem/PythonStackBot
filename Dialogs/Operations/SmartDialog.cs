@@ -74,10 +74,11 @@ namespace PythonStackBot.Dialogs.Operations
             {
                 //int id = response[0].Id;
                 //ID.QuestionID = id;
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+                 await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
                 {
                     Prompt = MessageFactory.Text(response[0].Answer),
                 }, cancellationToken);
+                return await stepContext.EndDialogAsync(null, cancellationToken);
                 //i++;
                 //return await stepContext.ContinueDialogAsync();
                 //QuestionConfirmStepAsync(stepContext, cancellationToken);
@@ -86,10 +87,12 @@ namespace PythonStackBot.Dialogs.Operations
             else
             {
                 //return await stepContext.Context.SendActivityAsync(MessageFactory.Text("No QnA Maker answers were found."), cancellationToken);
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+                 await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
                 {
                     Prompt = MessageFactory.Text("I don't know how to response."),
                 }, cancellationToken);
+
+                return await stepContext.EndDialogAsync(null, cancellationToken);
 
             }
 

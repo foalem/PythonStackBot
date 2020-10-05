@@ -43,12 +43,16 @@ namespace PythonStackBot.Dialogs
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new AddDialog(configuration));
             AddDialog(new QnADialog(configuration,service));
+            AddDialog(new LuisDialog(configuration, luisRecognizer));
             AddDialog(new SmartDialog(configuration, service));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
+                //IntroStepAsync,
                 IntroStepAsync,
                 ActStepAsync,
-                FinalStepAsync,
+                //LuisStepAsync,
+               // FinalStepAsync,
+              // FinalStepAsync,
             }));
 
             // The initial child Dialog to run.
@@ -89,14 +93,7 @@ namespace PythonStackBot.Dialogs
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (!_luisRecognizer.IsConfigured)
-            {
-                await stepContext.Context.SendActivityAsync(
-                    MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.", inputHint: InputHints.IgnoringInput), cancellationToken);
 
-                return await stepContext.NextAsync(null, cancellationToken);
-            }
-            var luisResult = await _luisRecognizer.RecognizeAsync<LuisCognitiveHelper>(stepContext.Context, cancellationToken);
             stepContext.Values["Operation"] = ((FoundChoice)stepContext.Result).Value;
             string operation = (string)stepContext.Values["Operation"];
 
@@ -107,33 +104,13 @@ namespace PythonStackBot.Dialogs
             }
             else if (operation.Equals("Ask a Question"))
             {
-                switch (luisResult.TopIntent().intent)
-                {
-                    case LuisCognitiveHelper.Intent.Search:
-                        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
-                        return await stepContext.BeginDialogAsync(nameof(QnADialog), new User(), cancellationToken);
-                    case LuisCognitiveHelper.Intent.SmallTalk:
-                        //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
-                        return await stepContext.BeginDialogAsync(nameof(SmartDialog), new User(), cancellationToken);
-                    case LuisCognitiveHelper.Intent.Brain:
-                        //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
-                        return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
-                        {
-                            Prompt = MessageFactory.Text("I'm using Microsoft AI.😊")
-                        }, cancellationToken);
-                    case LuisCognitiveHelper.Intent.None:
-                        //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
-                        return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
-                        {
-                            Prompt = MessageFactory.Text("I don't understang your question. Please rephrase it.")
-                        }, cancellationToken);
-                    default:
-                        //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...humm default😊"), cancellationToken);
-                        return await stepContext.EndDialogAsync(null, cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(LuisDialog), new User(), cancellationToken);
+                //return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+                //{
+                //    Prompt = MessageFactory.Text("Please you can ask your question.")
+                //}, cancellationToken);
+                //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Please you can ask your question."), cancellationToken);
 
-
-                }
-               
 
             }
             //else if (operation.Equals("Asking Programming Question about Python"))
@@ -146,14 +123,108 @@ namespace PythonStackBot.Dialogs
             {
 
             }
-            return await stepContext.NextAsync(null, cancellationToken);
+            return await stepContext.EndDialogAsync(null, cancellationToken);
         }
+        //private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        //{
+        //    if (!_luisRecognizer.IsConfigured)
+        //    {
+        //        await stepContext.Context.SendActivityAsync(
+        //            MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.", inputHint: InputHints.IgnoringInput), cancellationToken);
 
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            QnAData.QuestionPhrase.Clear();
-            var promptMessage = "What else can I do for you?";
-            return await stepContext.ReplaceDialogAsync(InitialDialogId, promptMessage, cancellationToken);
-        }
+        //        return await stepContext.NextAsync(null, cancellationToken);
+        //    }
+
+        //    // Use the text provided in FinalStepAsync or the default if it is the first time.
+        //   // var weekLaterDate = DateTime.Now.AddDays(7).ToString("MMMM d, yyyy");
+        //    //var messageText = stepContext.Options?.ToString() ?? $"Please you can ask your question.";
+        //    //var promptMessage = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput);
+        //    //return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = promptMessage }, cancellationToken);
+        //    return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { }, cancellationToken);
+        //}
+
+        //private async Task<DialogTurnResult> LuisStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        //{
+        //    //await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+        //    //    {
+        //    //        Prompt = MessageFactory.Text("Please you can ask your question.")
+        //    //    }, cancellationToken);
+
+        //    if (!_luisRecognizer.IsConfigured)
+        //    {
+        //        await stepContext.Context.SendActivityAsync(
+        //            MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.", inputHint: InputHints.IgnoringInput), cancellationToken);
+
+        //        //return await stepContext.NextAsync(null, cancellationToken);
+        //        return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+        //    }
+        //    var luisResult = await _luisRecognizer.RecognizeAsync<LuisCognitiveHelper>(stepContext.Context, cancellationToken);
+        //    switch (luisResult.TopIntent().intent)
+        //    {
+        //        case LuisCognitiveHelper.Intent.Search:
+        //            //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+        //             await stepContext.BeginDialogAsync(nameof(QnADialog), new User(), cancellationToken);
+        //             break;
+        //        case LuisCognitiveHelper.Intent.Joke:
+        //            //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+        //             await stepContext.BeginDialogAsync(nameof(AddDialog), new User(), cancellationToken);
+        //             break;
+        //        case LuisCognitiveHelper.Intent.SmallTalk:
+        //            //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+        //             await stepContext.BeginDialogAsync(nameof(SmartDialog), new User(), cancellationToken);
+        //             break;
+        //        case LuisCognitiveHelper.Intent.Brain:
+        //            //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+        //             await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+        //            {
+        //                Prompt = MessageFactory.Text("I'm using Microsoft AI.😊")
+        //            }, cancellationToken);
+        //             break;
+        //        case LuisCognitiveHelper.Intent.None:
+        //            //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+        //             await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+        //            {
+        //                Prompt = MessageFactory.Text("I don't understang your question. Please rephrase it.")
+        //            }, cancellationToken);
+        //             break;
+        //        default:
+        //            //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...humm default😊"), cancellationToken);
+        //             await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+        //            {
+        //                Prompt = MessageFactory.Text("Sorry, I didn't get that. Please try asking in a different way")
+        //            }, cancellationToken);
+        //             break;
+
+
+        //    }
+        //   // return await stepContext.NextAsync(stepContext, cancellationToken);
+        //    return await stepContext.ReplaceDialogAsync(InitialDialogId);
+
+        //}
+
+        //private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        //{
+        //    //QnAData.QuestionPhrase.Clear();
+        //    //var promptMessage = "What else can I do for you?";
+        //    //return await stepContext.ReplaceDialogAsync(InitialDialogId, promptMessage, cancellationToken);
+        //    //await stepContext.Context.SendActivityAsync(MessageFactory.Text("fd"), cancellationToken);
+        //    //await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
+        //    //{
+        //    //    Prompt = MessageFactory.Text("You can ask other question.")
+        //    //}, cancellationToken);
+        //    //new DialogTurnResult(DialogTurnStatus.Waiting);
+        //    //if (stepContext.Context.Activity.Type == ActivityTypes.Message)
+        //    //{ 
+        //    //    stepContext.ActiveDialog.State["stepIndex"] = (int)stepContext.ActiveDialog.State["stepIndex"] - 2;
+        //    //}
+        //    return await stepContext.ReplaceDialogAsync(InitialDialogId,cancellationToken);
+        //}
+
+        //private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        //{
+        //   // await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { }, cancellationToken);
+
+        //    return await stepContext.ReplaceDialogAsync(InitialDialogId, cancellationToken);
+        //}
     }
 }
