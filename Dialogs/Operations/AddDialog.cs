@@ -98,8 +98,9 @@ namespace PythonStackBot.Dialogs.Operations
                     await stepContext.Context.SendActivityAsync(MessageFactory.Text(QnAData.QuestionPhrase[i]), cancellationToken);
                 }
 
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your programming Answer - "), cancellationToken);
 
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your programming Answer - " + (string)stepContext.Values["Answer"]), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text((string)stepContext.Values["Answer"]), cancellationToken);
 
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Please wait while I update my Knowledge Base."), cancellationToken);
 

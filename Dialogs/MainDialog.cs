@@ -43,6 +43,7 @@ namespace PythonStackBot.Dialogs
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new AddDialog(configuration));
             AddDialog(new QnADialog(configuration,service));
+            //AddDialog(new QnAMakerBaseDialog(configuration, service));
             AddDialog(new LuisDialog(configuration, luisRecognizer));
             AddDialog(new SmartDialog(configuration, service));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
@@ -61,6 +62,7 @@ namespace PythonStackBot.Dialogs
 
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+
             await stepContext.Context.SendActivityAsync(
                 MessageFactory.Text("Here's what I can do to help ... 😊"), cancellationToken);
 
@@ -226,5 +228,6 @@ namespace PythonStackBot.Dialogs
 
         //    return await stepContext.ReplaceDialogAsync(InitialDialogId, cancellationToken);
         //}
+
     }
 }

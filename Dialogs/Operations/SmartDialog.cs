@@ -13,7 +13,7 @@ namespace PythonStackBot.Dialogs.Operations
 {
     public class SmartDialog : ComponentDialog
     {
-        public const float DefaultThreshold = 0.3F;
+        public const float DefaultThreshold = 0.5F;
         public const int DefaultTopN = 25;
         //public int i = 0;
         public string Question;

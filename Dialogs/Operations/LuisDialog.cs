@@ -88,10 +88,14 @@ namespace PythonStackBot.Dialogs.Operations
                     //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
                     await stepContext.BeginDialogAsync(nameof(SmartDialog), new User(), cancellationToken);
                     break;
+                case LuisCognitiveHelper.Intent.Help:
+                    //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
+                    await stepContext.BeginDialogAsync(nameof(SmartDialog), new User(), cancellationToken);
+                    break;
                 case LuisCognitiveHelper.Intent.Joke:
                     //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
-                    await stepContext.EndDialogAsync();
-                    break;
+                     return await stepContext.EndDialogAsync();
+                   // break;
                 case LuisCognitiveHelper.Intent.Brain:
                     //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
                     await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
@@ -103,14 +107,14 @@ namespace PythonStackBot.Dialogs.Operations
                     //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...😊"), cancellationToken);
                     await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
                     {
-                        Prompt = MessageFactory.Text("I don't understang your question. Please rephrase it.")
+                        Prompt = MessageFactory.Text("Sorry😊,this question is not in my area of ​​expertise.")
                     }, cancellationToken);
                     break;
                 default:
                     //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Humm... Searching...humm default😊"), cancellationToken);
                     await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
                     {
-                        Prompt = MessageFactory.Text("Sorry, I didn't get that. Please try asking in a different way")
+                        Prompt = MessageFactory.Text("Sorry😊,this question is not in my area of ​​expertise.")
                     }, cancellationToken);
                     break;
 
